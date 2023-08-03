@@ -2,26 +2,30 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../../Context";
 
-function SignIn() {
-  const { userData, setUser, user } = React.useContext(AppContext);
+function SignUp() {
   const formRef = React.useRef(null);
-  const [errorHandler, setErrorHandler] = React.useState(false);
+  const { setUserData, setUser, user, userLocalStorage } = React.useContext(AppContext);
   const route = useNavigate();
 
-  const logInUser = (evt) => {
+  const signUpForm = (evt, form) => {
     evt.preventDefault();
+    const formData = new FormData(form.current);
 
-    const formData = new FormData(formRef.current);
-    let email = formData.get("email");
-    let password = formData.get("password");
+    setUserData({
+      username: formData.get("username"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    });
 
-    if (userData?.email === email && userData?.password === password) {
-      setErrorHandler(false);
-      setUser(userData);
-      return route("/");
-    } else {
-      return setErrorHandler(true);
-    }
+    setUser({
+      username: formData.get("username"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    });
+
+    userLocalStorage();
+
+    route("/");
   };
 
   return (
@@ -32,8 +36,20 @@ function SignIn() {
         <form
           className="max-w-xs w-full h-screen flex flex-col justify-start items-start gap-y-4"
           ref={formRef}
-          onSubmit={(evt) => logInUser(evt)}
+          onSubmit={(evt) => signUpForm(evt, formRef)}
         >
+          <div className="flex flex-col items-start justify-start gap-y-1 w-full">
+            <label htmlFor="username" className="text-xl font-semibold">
+              Username
+            </label>
+            <input
+              type="text"
+              name="username"
+              id="username"
+              className="p-4 border border-black rounded-lg w-full text-lg font-medium"
+            />
+          </div>
+
           <div className="flex flex-col items-start justify-start gap-y-1 w-full">
             <label htmlFor="email" className="text-xl font-semibold">
               Email
@@ -62,27 +78,19 @@ function SignIn() {
             type="submit"
             className="p-4 bg-black rounded-lg outline-none w-full text-white items-center"
           >
-            Sign In
+            Sign Up
           </button>
-
-          {errorHandler === true ? (
-            <span className="w-full h-fit">
-              Account not match with our user data. Please try again.
-            </span>
-          ) : (
-            ""
-          )}
 
           <div className="flex flex-col items-start justify-start gap-y-1 w-full">
             <span className="font-light text-sm text-gray-400">
-              Don&apos;t you have an account?
+              Do you have an account?
             </span>
-            <Link to={`/sign-up`} className="w-full">
+            <Link to={`/sign-in`} className="w-full">
               <button
                 type="button"
                 className="p-4 bg-white rounded-lg outline-none w-full text-gray-400 items-center border border-gray-400"
               >
-                Sign Up
+                Log In
               </button>
             </Link>
           </div>
@@ -92,4 +100,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default SignUp;

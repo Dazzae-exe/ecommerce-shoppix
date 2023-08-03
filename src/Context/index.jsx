@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { totalPrice } from "../utils";
 
 const AppContext = React.createContext();
@@ -11,7 +11,6 @@ function AppProvider({ children }) {
       .then((response) => response.json())
       .then((data) => setItems(data))
       .catch((err) => console.error(err))
-      .finally(console.log("Salio del fetch."));
   }, []);
 
   // Search by title data
@@ -24,8 +23,6 @@ function AppProvider({ children }) {
       itemSearched.title.toLowerCase().includes(searchByTitle.toLowerCase())
     );
     setFilteredItems(searchItems);
-
-    console.log("Filtered items: ", filteredItems);
   };
 
   // Search by category
@@ -41,7 +38,7 @@ function AppProvider({ children }) {
     setFilteredItems(categoryItems);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     categoryHandler();
   }, [searchByCategory]);
 
@@ -66,7 +63,6 @@ function AppProvider({ children }) {
     setCartProducts([...cartProducts, cartData]);
     setCartCounter(cartCounter + 1);
     checkoutHandler(true);
-    console.log(cartProducts);
   };
 
   // Cart ~ Orders
@@ -86,6 +82,52 @@ function AppProvider({ children }) {
 
     checkoutHandler(false);
   };
+
+  // User sign in - log out - profile
+  const [userData, setUserData] = React.useState({});
+  const [user, setUser] = React.useState({});
+
+  const userDataLocalStorage = () => {
+    const userSetLocal = localStorage.setItem(
+      "userData",
+      JSON.stringify({}, null, 2)
+    );
+    const userGetLocal = localStorage.getItem("userData");
+
+    if (!userGetLocal) {
+      return userSetLocal;
+    } else {
+      localStorage.setItem("userData", JSON.stringify(userData, null, 2));
+      return userGetLocal;
+    }
+  };
+
+  const userLocalStorage = () => {
+    const userSetLocal = localStorage.setItem(
+      "user",
+      JSON.stringify(user, null, 2)
+    );
+    const userGetLocal = localStorage.getItem("user");
+
+    if (!userGetLocal) {
+      return userSetLocal;
+    } else {
+      localStorage.setItem("user", JSON.stringify(user, null, 2));
+      return userGetLocal;
+    }
+  };
+
+  React.useEffect(() => {
+    userLocalStorage();
+  }, [user]);
+
+  const removeUserLocalStorage = () => {
+    return localStorage.removeItem("user");
+  };
+
+  React.useEffect(() => {
+    userDataLocalStorage();
+  }, [userData]);
 
   return (
     <AppContext.Provider
@@ -111,6 +153,12 @@ function AppProvider({ children }) {
         categoryHandler,
         setSearchByCategory,
         searchByCategory,
+        setUserData,
+        userData,
+        user,
+        setUser,
+        userLocalStorage,
+        removeUserLocalStorage,
       }}
     >
       {children}

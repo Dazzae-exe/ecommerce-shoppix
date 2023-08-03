@@ -10,6 +10,7 @@ function CartCheckout() {
     checkoutHandler,
     cartProducts,
     handleCheckoutOrder,
+    user,
   } = React.useContext(AppContext);
 
   return (
@@ -55,7 +56,7 @@ function CartCheckout() {
         <span className="font-semibold">{totalPrice(cartProducts)}$</span>
       </div>
 
-      <Link to={`/order/last`} className="w-full h-fit">
+      <Link to={user?.username ? `/order/last` : `/`} className="w-full h-fit">
         <button
           type="button"
           className="w-full h-fit py-1.5 rounded-lg border outline-none bg-black text-white"
